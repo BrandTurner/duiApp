@@ -4,10 +4,20 @@ import { darkMode } from 'styles/palette';
 import MyMapComponent from 'components/GoogleMap';
 import { Wrapper, Title } from './styles';
 
-import dui_programs from 'data/dui_providers.json';
+import dui_programs from 'data/dui_providers_new.json';
 // TODO Update DUI provdiers.json with updated info / CSV
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
+const apiKey = 'AIzaSyDIhcy641K5S299bkKIJMU4B1U6XUuR_uo';
+const mapContainerStyle = {
+  height: '400px',
+  width: '800px'
+}
+const zoom = 8;
+const center = {
+  lat: 34.0522,
+  lng: -118.2437
+}
 
 class App extends Component {
   state = {
@@ -39,6 +49,10 @@ class App extends Component {
       <div>
         <MyMapComponent
           markers={dui_programs}
+          apiKey={apiKey}
+          mapContainerStyle={mapContainerStyle}
+          zoom={zoom}
+          center={center}
          />
       </div>
     );
