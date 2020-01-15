@@ -9,27 +9,74 @@ import { GoogleMap, LoadScript, Marker, InfoWindow, InfoBox } from '@react-googl
 
 // TODO check for markers
 
-const MyMapComponent = (props) => (
-  <LoadScript
-    id="script-loader"
-    googleMapsApiKey={props.apiKey}
-  >
-    <GoogleMap
-      id="example-map"
-      mapContainerStyle={props.mapContainerStyle}
-      zoom={props.zoom}
-      center={props.center}
-    >
+class MyMapComponent extends Component {
+  state = {
+    markers: []
+  }
 
-    {props.markers.providers.map(marker => (
-        <Marker
-          key={marker.key}
-          position={marker.newLocation}
-        />
-      ))
-      }
-    </GoogleMap>
-  </LoadScript>
-)
+  componentDidMount() {
+    const props  = this.props;
+
+    this.setState({
+      markers: props.markers.providers
+    });
+  }
+
+  handleMarkerClick = (target_marker, index) => {
+    console.log('marker clicked', target_marker);
+    console.log('INDEX', index)
+    this.setState({
+      markers: this.state.markers.map(marker => {
+        if (marker === target_marker) {
+          return {
+            ...marker,
+            showInfo: true,
+          }
+        }
+        return marker;
+      })
+    })
+  }
+
+  render() {
+    const props  = this.props
+
+    return (
+      <LoadScript
+        id="script-loader"
+        googleMapsApiKey={props.apiKey}
+      >
+        <GoogleMap
+          id="example-map"
+          mapContainerStyle={props.mapContainerStyle}
+          zoom={props.zoom}
+          center={props.center}
+        >
+
+        {props.markers.providers.map(marker => (
+            <Marker
+              key={marker.key}
+              position={marker.newLocation}
+              onClick={this.handleMarkerClick}
+            >
+            {marker.showInfo &&
+              <InfoWindow>
+                <div style={{
+                  background: 'white',
+                  border: '1px solid #ccc',
+                  padding: 15
+                }}>
+                  <h1>InfoWindow</h1>
+                </div>
+              </InfoWindow>}
+            </Marker>
+            ))
+          }
+
+        </GoogleMap>
+      </LoadScript>
+    )
+  }
+}
 
 export default MyMapComponent;

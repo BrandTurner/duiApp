@@ -36,19 +36,19 @@ class App extends Component {
   }
 
   handleMarkerClick = () => {
-    this.setState({ isMarkerShown: false})
-    this.delayedShowMarker()
+    // this.setState({ isMarkerShown: false})
+    // this.delayedShowMarker()
+    console.log('MARKER CLICKED');
   }
 
   render() {
-    console.log("DUI Programs", dui_programs)
-
     // markers need latitude and longitude
 
     return (
       <div>
         <MyMapComponent
           markers={dui_programs}
+          handleMarkerClick={this.handleMarkerClick}
           apiKey={apiKey}
           mapContainerStyle={mapContainerStyle}
           zoom={zoom}
