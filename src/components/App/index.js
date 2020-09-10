@@ -1,82 +1,57 @@
-import React, { Component } from 'react';
-import { ThemeProvider } from 'styled-components';
-import { darkMode } from 'styles/palette';
-import MyMapComponent from 'components/GoogleMap';
-import { Wrapper, Title } from './styles';
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import GoogleMapReact from 'google-map-react';
 
-import dui_programs from 'data/dui_providers_new.json';
-// TODO Update DUI provdiers.json with updated info / CSV
+// Native
+const isEmpty = obj => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;
+const la_center = [34.0522, -118.2437];
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-const apiKey = 'AIzaSyDIhcy641K5S299bkKIJMU4B1U6XUuR_uo';
-const mapContainerStyle = {
-  height: '400px',
-  width: '800px'
-}
-const zoom = 8;
-const center = {
-  lat: 34.0522,
-  lng: -118.2437
-}
-
-class App extends Component {
+class MarkerInfoWindow extends Component {
   state = {
-    isMarkerShown: false,
-    providers: []
+    places: [],
   }
 
   componentDidMount() {
-    this.delayedShowMarker()
+    fetch('places.json')
+      .then(response => response.json())
+      .then((data) => {
+        data.results.forEach((result) => {
+          result.show = false; // Not functional, no good
+        });
+        this.setState({ places: data.results });
+      })
   }
 
-  delayedShowMarker = () => {
-    setTimeout(() => {
-      this.setState({ isMarkerShown: true })
-    }, 3000)
-  }
-
-  handleMarkerClick = () => {
-    // this.setState({ isMarkerShown: false})
-    // this.delayedShowMarker()
-    console.log('MARKER CLICKED');
+  onChildClickCallback = (key) => {
+    this.setState((state) => {
+      const index = state.places.findIndex(e => e.id === key);
+      state.places[index].show = !state.places[index].show;
+      return { places: state.places };
+    })
   }
 
   render() {
-    // markers need latitude and longitude
+
+    const { places } = this.state;
 
     return (
-      <div>
-        <MyMapComponent
-          markers={dui_programs}
-          handleMarkerClick={this.handleMarkerClick}
-          apiKey={apiKey}
-          mapContainerStyle={mapContainerStyle}
-          zoom={zoom}
-          center={center}
-         />
-      </div>
-    );
+      <Fragment>
+        {!isEmpty(places) && (
+          <GoogleMapReact
+            defaultZoom={10}
+            defaultCenter={la_center}
+            bootstrapURLKeys={{ key: 'AIzaSyDIhcy641K5S299bkKIJMU4B1U6XUuR_uo' }}
+            onChildClick={this.onChildClickCallback}
+          >
+
+            {places.map(place =>
+            (<Marker
+
+            ))}
+
+          </GoogleMapReact>
+        )}
+      </Fragment>
+    )
   }
 }
-
-export default App;
-
-     // <ThemeProvider theme={darkMode}>
-      //   <div>
-      //     <Wrapper>
-      //       <Title>
-      //       Hello World!
-
-      //       </Title>
-      //     </Wrapper>
-      //     <MyMapComponent />
-      //     {/* <MyMapComponent
-      //       isMarkerShown={this.state.isMarkerShown}
-      //       onMarkerClick={this.handleMarkerClick}
-      //       googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBk_hBS0AnkSF6PJ94n8WecNXTEjWCiqrE&libraries=geometry,drawing,places"
-      //       loadingElement={<div style={{ height: `100%` }} />}
-      //       containerElement={<div style={{ height: `400px` }} />}
-      //       mapElement={<div style={{ height: `100%` }} />}
-      //     /> */}
-      //   </div>
-      // </ThemeProvider>
